@@ -6,6 +6,8 @@ import time
 import torch
 from ming.conversations import conv_templates, get_default_conv_template, SeparatorStyle
 from ming.model.builder import load_pretrained_model, load_molora_pretrained_model
+# from ming.model.builder import load_molora_pretrained_model
+# from ming.model.builder_ms import load_pretrained_model
 import numpy as np
 import pdb
 
