@@ -62,7 +62,7 @@ class MingModel():
             "max_new_tokens": max_new_tokens,
             "stop": stop_str,
         }
-        input_ids = tokenizer(prompt).input_ids
+        input_ids = self.tokenizer(prompt).input_ids
         # output_ids = list(input_ids)
 
         max_src_len = self.context_len - max_new_tokens - 8
