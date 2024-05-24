@@ -36,7 +36,7 @@ class MingModel():
         self.beam_size = 3
         self.tokenizer = tokenizer
         self.context_len = context_len
-        self.ming_model = model
+        self.model = model
 
     def create_chat_prompt(self, query, history):
         chat_prompt = ''
