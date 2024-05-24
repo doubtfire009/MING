@@ -54,7 +54,7 @@ class MingModel():
         prompt = """A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions."""
         prompt = prompt + ' ' + chat_prompt
         stop_str = '</s>'
-        if stop_str == tokenizer.eos_token:
+        if stop_str == self.tokenizer.eos_token:
             stop_str = None
         params = {
             "prompt": prompt,
