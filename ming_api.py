@@ -1,6 +1,6 @@
 from typing import Union
 from fastapi import FastAPI
-from pydantic import BaseMode
+from pydantic import BaseModel
 import uvicorn
 import abc
 from typing import Optional
@@ -41,8 +41,9 @@ class MingModel():
     def create_chat_prompt(self, query, history):
         chat_prompt = ''
         history_prompt = ''
-        for item in history:
-            history_prompt = ' ' + chat_prompt + 'USER: ' + item[0] + ' ASSISTANT: ' + item[1]
+        if len(history) > 0:
+            for item in history:
+                history_prompt = ' ' + chat_prompt + 'USER: ' + item[0] + ' ASSISTANT: ' + item[1]
 
         chat_prompt = history_prompt + ' USER: ' + query + ' ASSISTANT:'
         return chat_prompt
@@ -92,5 +93,5 @@ def doctor_consult(chatInfo: ChatInfo):
     return response
 
 if __name__ == '__main__':
-    
+
     uvicorn.run(app='ming_api:app', host="0.0.0.0", port=8081, reload=True, debug=True)
