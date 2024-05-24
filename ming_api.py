@@ -68,7 +68,7 @@ class MingModel():
         max_src_len = self.context_len - max_new_tokens - 8
         input_ids = torch.tensor(input_ids[-max_src_len:]).unsqueeze(0).cuda()
 
-        outputs = model.generate(
+        outputs = self.model.generate(
             inputs=input_ids,
             max_new_tokens=max_new_tokens,
             do_sample=True,
