@@ -36,7 +36,12 @@ class MingModel():
         self.beam_size = 3
         self.tokenizer = tokenizer
         self.context_len = context_len
+        #model = model.cuda()
+        print("model_device:", next(model.parameters()).device) 
         self.model = model
+
+    def launch_model_by_gpu(self):
+        self.model = self.model.cuda()
 
     def create_chat_prompt(self, query, history):
         chat_prompt = ''
@@ -48,7 +53,7 @@ class MingModel():
         chat_prompt = history_prompt + ' USER: ' + query + ' ASSISTANT:'
         return chat_prompt
 
-
+    @torch.inference_mode()
     def create_history_chat(self, query, history, temperature, max_new_tokens):
         chat_prompt = self.create_chat_prompt(query, history)
         prompt = """A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions."""
@@ -67,6 +72,19 @@ class MingModel():
 
         max_src_len = self.context_len - max_new_tokens - 8
         input_ids = torch.tensor(input_ids[-max_src_len:]).unsqueeze(0).cuda()
+        print("model type:", type(self.model))
+        print("input_ids:", type(input_ids))
+        print("max_new_tokens:", type(max_new_tokens))
+        print("beam_size:", type(self.beam_size))
+        print("temperature:", type(temperature))
+        print("model_device--gen:", next(self.model.parameters()).device)
+        
+        current_gpu_index = torch.cuda.current_device()
+        total_memory = torch.cuda.get_device_properties(current_gpu_index).total_memory / (1024 ** 3)  # 显存总量(GB)
+        used_memory = torch.cuda.memory_allocated(current_gpu_index) / (1024 ** 3)  # 已使用显存(GB)
+        free_memory = total_memory - used_memory
+        print("free_memory:", free_memory)
+        print("used_memory:", used_memory)
 
         outputs = self.model.generate(
             inputs=input_ids,
@@ -80,6 +98,7 @@ class MingModel():
         return output
 
 ming_model = MingModel()
+ming_model.launch_model_by_gpu()
 
 @app.get("/")
 def read_root():
