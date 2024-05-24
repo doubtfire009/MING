@@ -1,7 +1,7 @@
 from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseMode
-
+import uvicorn
 import abc
 from typing import Optional
 import warnings
@@ -90,3 +90,7 @@ def doctor_consult(chatInfo: ChatInfo):
     query, history, temperature, max_new_tokens = chatInfo.query, chatInfo.history, chatInfo.temperature, chatInfo.max_new_tokens
     response = ming_model.create_history_chat(query, history, temperature, max_new_tokens)
     return response
+
+if __name__ == '__main__':
+    
+    uvicorn.run(app='ming_api:app', host="0.0.0.0", port=8081, reload=True, debug=True)
