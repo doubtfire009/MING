@@ -11,6 +11,7 @@ from ming.conversations import conv_templates, get_default_conv_template, Separa
 from ming.model.builder import load_pretrained_model, load_molora_pretrained_model
 import numpy as np
 import pdb
+from transformers import TextStreamer
 
 # from ming.serve.inference import chat_loop, ChatIO
 
@@ -23,7 +24,7 @@ class ChatInfo(BaseModel):
 app = FastAPI()
 
 class MingModel():
-    def __init__(self):
+    def __init__(self, stream=True):
         # embedding_model_path = '/www/llm_model/X-D-Lab/MindChat-Qwen-7B-v2'
         model_path = '/www/llm_model/MING-7B'
         conv_template = 'bloom'
@@ -39,6 +40,7 @@ class MingModel():
         #model = model.cuda()
         print("model_device:", next(model.parameters()).device) 
         self.model = model
+        self.stream = True
 
     def launch_model_by_gpu(self):
         self.model = self.model.cuda()
@@ -86,15 +88,29 @@ class MingModel():
         print("free_memory:", free_memory)
         print("used_memory:", used_memory)
 
-        outputs = self.model.generate(
-            inputs=input_ids,
-            max_new_tokens=max_new_tokens,
-            do_sample=True,
-            num_beams=self.beam_size,
-            temperature=temperature,
-        )
-        outputs = outputs[0][len(input_ids[0]):]
-        output = self.tokenizer.decode(outputs, skip_special_tokens=True)
+        if self.stream:
+            streamer = TextStreamer(self.tokenizer)
+            outputs = self.model.generate(
+                inputs=input_ids,
+                max_new_tokens=max_new_tokens,
+                do_sample=True,
+                num_beams=self.beam_size,
+                temperature=temperature,
+                streamer=streamer
+
+            )
+            outputs = outputs[0][len(input_ids[0]):]
+            output = self.tokenizer.decode(outputs, skip_special_tokens=True)
+        else:
+            outputs = self.model.generate(
+                inputs=input_ids,
+                max_new_tokens=max_new_tokens,
+                do_sample=True,
+                num_beams=self.beam_size,
+                temperature=temperature,
+            )
+            outputs = outputs[0][len(input_ids[0]):]
+            output = self.tokenizer.decode(outputs, skip_special_tokens=True)
         return output
 
 ming_model = MingModel()
