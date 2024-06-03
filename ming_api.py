@@ -94,7 +94,7 @@ class MingModel():
                 inputs=input_ids,
                 max_new_tokens=max_new_tokens,
                 do_sample=True,
-                num_beams=self.beam_size,
+                num_beams=1,
                 temperature=temperature,
                 streamer=streamer
 
